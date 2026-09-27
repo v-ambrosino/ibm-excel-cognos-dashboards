@@ -6,25 +6,24 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 Final assignment of **Course 7 – *Data Visualization and Dashboards with Excel and Cognos***, part of the
-**[IBM Data Analyst Professional Certificate](https://www.coursera.org/professional-certificates/ibm-data-analyst)** (Coursera),
-plus the Excel data-preparation assignment of Course 2 (*Excel Basics for Data Analysis*) as a bonus.
+**[IBM Data Analyst Professional Certificate](https://www.coursera.org/professional-certificates/ibm-data-analyst)** (Coursera).
 
 The project covers the whole "raw data → clean table → pivot → chart → dashboard" workflow:
 
-| Section | Course | Dataset | Tools | Output |
-|---|---|---|---|---|
-| **Part 1 – Car sales pivot charts** | Course 7 | 3,000 rows · monthly sales 2021-2025, 5 models, 10 dealers | Excel pivot tables & pivot charts | 4 pivot charts |
-| **Part 2 – Car sales & service dashboard** | Course 7 | Car sales + vehicle recalls / service data | IBM Cognos Analytics | 2-tab dashboard (Sales, Service) |
-| **Bonus – Montgomery County fleet** | Course 2 | 102 rows · department / equipment class / count | Excel cleaning tools, formulas, pivot tables | Clean dataset, summary statistics, 3 pivot tables |
+| Section | Dataset | Tools | Output |
+|---|---|---|---|
+| **Part 1 – Montgomery County fleet** | 102 rows · department / equipment class / count | Excel cleaning tools, formulas, pivot tables | Clean dataset, summary statistics, 3 pivot tables |
+| **Part 2 – Car sales pivot charts** | 3,000 rows · monthly sales 2021-2025, 5 models, 10 dealers | Excel pivot tables & pivot charts | 4 pivot charts |
+| **Part 3 – Car sales & service dashboard** | Car sales + vehicle recalls / service data | IBM Cognos Analytics | 2-tab dashboard (Sales, Service) |
 
 ---
 
 ## Table of contents
 
 1. [Repository structure](#repository-structure)
-2. [Part 1 – Car sales pivot charts (Excel)](#part-1--car-sales-pivot-charts-excel)
-3. [Part 2 – Car Sales and Service Dashboard (IBM Cognos Analytics)](#part-2--car-sales-and-service-dashboard-ibm-cognos-analytics)
-4. [Bonus – Montgomery County fleet inventory](#bonus--montgomery-county-fleet-inventory-excel-data-preparation--pivot-tables)
+2. [Part 1 – Montgomery County fleet inventory](#part-1--montgomery-county-fleet-inventory-excel-data-preparation--pivot-tables)
+3. [Part 2 – Car sales pivot charts (Excel)](#part-2--car-sales-pivot-charts-excel)
+4. [Part 3 – Car Sales and Service Dashboard (IBM Cognos Analytics)](#part-3--car-sales-and-service-dashboard-ibm-cognos-analytics)
 5. [Key insights](#key-insights)
 6. [Skills demonstrated](#skills-demonstrated)
 7. [How to reproduce the preview charts](#how-to-reproduce-the-preview-charts)
@@ -38,11 +37,11 @@ The project covers the whole "raw data → clean table → pivot → chart → d
 ```
 ibm-excel-cognos-dashboards/
 ├── data/
-│   ├── CarSalesByModelEnd.xlsx                                 # Course 7 – car sales data + 4 pivot tables / pivot charts
-│   ├── Montgomery_Fleet_Equipment_Inventory_FA.xlsx           # Course 2 – Part 1: cleaned fleet inventory
-│   └── Montgomery_Fleet_Equipment_Inventory_FA_PART_2_END.xlsx # Course 2 – Part 2: table, formulas, 3 pivot tables
+│   ├── CarSalesByModelEnd.xlsx                                 # Part 2 – car sales data + 4 pivot tables / pivot charts
+│   ├── Montgomery_Fleet_Equipment_Inventory_FA.xlsx           # Part 1a – cleaned fleet inventory
+│   └── Montgomery_Fleet_Equipment_Inventory_FA_PART_2_END.xlsx # Part 1b – table, formulas, 3 pivot tables
 ├── dashboard/
-│   └── Car_Sales_and_Service_Dashboard.pdf                     # Course 7 – Cognos Analytics dashboard export
+│   └── Car_Sales_and_Service_Dashboard.pdf                     # Part 3 – Cognos Analytics dashboard export
 ├── images/                                                     # Screenshots and preview charts used in this README
 ├── scripts/
 │   └── make_charts.py                                          # Re-draws some Excel views as PNG for GitHub preview
@@ -51,13 +50,64 @@ ibm-excel-cognos-dashboards/
 └── README.md
 ```
 
-> The Excel workbooks are the actual deliverables of the assignments (pivot tables and pivot charts are
+> The Excel workbooks are the actual deliverables of the assignment (pivot tables and pivot charts are
 > inside the files – open them in Excel to explore them interactively). Sheet and field names such as
 > *Somma di*, *Totale complessivo* and *Tabella1* come from the Italian locale of Excel used to build them.
 
 ---
 
-## Part 1 – Car sales pivot charts (Excel)
+## Part 1 – Montgomery County fleet inventory (Excel data preparation & pivot tables)
+
+**Data:** equipment inventory of Montgomery County (Maryland) departments – for each department, the
+number of vehicles/equipment in each class (Sedan, SUV, Pick Up Trucks, Transit Bus, Heavy Duty, …).
+The assignment uses two halves of the inventory: departments *Board of Elections* → *Health and Human Services*
+(53 rows) and *Housing and Community Affairs* → *Transportation* (49 rows).
+
+### 1a – Data cleaning (`Montgomery_Fleet_Equipment_Inventory_FA.xlsx`)
+
+Starting from the raw CSV export, I prepared the data for analysis:
+
+1. **Converted the CSV to an Excel workbook (.xlsx)** and adjusted column widths for readability.
+2. **Removed empty rows** using filters.
+3. **Removed duplicate records** (*Data → Remove Duplicates*), keeping **53 unique rows**.
+4. **Fixed spelling errors** with the spell checker.
+5. **Normalized whitespace** with *Find & Replace* (double spaces → single space).
+6. **Combined the split Department fields** into a single column with **Flash Fill**.
+
+Result: a clean table of 53 records (13 departments, 531 units) with no blanks, duplicates or double spaces.
+
+### 1b – Summary statistics and pivot tables (`Montgomery_Fleet_Equipment_Inventory_FA_PART_2_END.xlsx`)
+
+1. **Converted the range into an Excel Table** (`Tabella1`, style *Medium 15*) to get structured references,
+   banded rows and filters.
+2. **Descriptive statistics with formulas** on the *Equipment Count* column:
+
+   | Function | Formula | Result |
+   |---|---|---|
+   | SUM | `=SUM(Tabella1[Equipment Count])` | **1,582** |
+   | MIN | `=MIN(C2:C50)` | 1 |
+   | MAX | `=MAX(C2:C50)` | 379 |
+   | COUNT | `=COUNT(C2:C50)` | 49 |
+   | AVERAGE | `=AVERAGE(C2:C50)` | 32.29 |
+
+3. **Three pivot tables** to summarise the fleet from different angles:
+   - **Pivot Table 1** – total equipment per department, sorted descending.
+   - **Pivot Table 2** – department → equipment class drill-down (Transportation expanded).
+   - **Pivot Table 3** – equipment class → department drill-down (CUV expanded).
+
+![Fleet equipment by department](images/excel_fleet_by_department.png)
+
+**Findings**
+
+- **Transportation owns 1,221 of 1,582 units (≈ 77%)** of this part of the fleet – mainly Transit Buses (379),
+  Off Road Vehicle Equipment (276) and Heavy Duty vehicles (248).
+- By class, **Transit Bus (379)**, **Heavy Duty (290)** and **Off Road Vehicle Equipment (283)** are the largest
+  groups; almost all *Public Safety* vehicles (79 of 80) belong to the Sheriff's Office.
+- The distribution is highly skewed (mean 32 vs max 379), so medians/pivots are more informative than the average.
+
+---
+
+## Part 2 – Car sales pivot charts (Excel)
 
 **Data:** `Sales by Model` sheet – 3,000 records (600 per year, **Jan 2021 → Dec 2025**) with
 `Year, Month, Date, Model, Dealer ID, Quantity Sold, Profit` for **5 car models** (Beaufort, Champlain,
@@ -92,7 +142,7 @@ Preview (re-drawn with Python from the same data – see [`scripts/make_charts.p
 
 ---
 
-## Part 2 – Car Sales and Service Dashboard (IBM Cognos Analytics)
+## Part 3 – Car Sales and Service Dashboard (IBM Cognos Analytics)
 
 Interactive dashboard built in **IBM Cognos Analytics** with two tabs. The full export is in
 [`dashboard/Car_Sales_and_Service_Dashboard.pdf`](dashboard/Car_Sales_and_Service_Dashboard.pdf).
@@ -119,61 +169,6 @@ Interactive dashboard built in **IBM Cognos Analytics** with two tabs. The full 
 | Sentiment by Count | Treemap | Distribution of customer sentiment in service feedback |
 | Profit and Quantity Sold per Month | Combo chart (columns + line) | Seasonality of units and profit across months |
 | # of Recalls by Model and Affected System | Heat map | Which vehicle systems (airbag, brakes, powertrain, …) drive recalls for each model |
-
----
-
-## Bonus – Montgomery County fleet inventory (Excel data preparation & pivot tables)
-
-> This section comes from the final assignment of **Course 2 – *Excel Basics for Data Analysis*** of the same
-> IBM certificate. It is included here because it shows the data-cleaning and pivot-table groundwork that the
-> Course 7 visualizations build on.
-
-**Data:** equipment inventory of Montgomery County (Maryland) departments – for each department, the
-number of vehicles/equipment in each class (Sedan, SUV, Pick Up Trucks, Transit Bus, Heavy Duty, …).
-The assignment uses two halves of the inventory: departments *Board of Elections* → *Health and Human Services*
-(Part 1, 53 rows) and *Housing and Community Affairs* → *Transportation* (Part 2, 49 rows).
-
-### Part 1 – Data cleaning (`Montgomery_Fleet_Equipment_Inventory_FA.xlsx`)
-
-Starting from the raw CSV export, I prepared the data for analysis:
-
-1. **Converted the CSV to an Excel workbook (.xlsx)** and adjusted column widths for readability.
-2. **Removed empty rows** using filters.
-3. **Removed duplicate records** (*Data → Remove Duplicates*), keeping **53 unique rows**.
-4. **Fixed spelling errors** with the spell checker.
-5. **Normalized whitespace** with *Find & Replace* (double spaces → single space).
-6. **Combined the split Department fields** into a single column with **Flash Fill**.
-
-Result: a clean table of 53 records (13 departments, 531 units) with no blanks, duplicates or double spaces.
-
-### Part 2 – Summary statistics and pivot tables (`Montgomery_Fleet_Equipment_Inventory_FA_PART_2_END.xlsx`)
-
-1. **Converted the range into an Excel Table** (`Tabella1`, style *Medium 15*) to get structured references,
-   banded rows and filters.
-2. **Descriptive statistics with formulas** on the *Equipment Count* column:
-
-   | Function | Formula | Result |
-   |---|---|---|
-   | SUM | `=SUM(Tabella1[Equipment Count])` | **1,582** |
-   | MIN | `=MIN(C2:C50)` | 1 |
-   | MAX | `=MAX(C2:C50)` | 379 |
-   | COUNT | `=COUNT(C2:C50)` | 49 |
-   | AVERAGE | `=AVERAGE(C2:C50)` | 32.29 |
-
-3. **Three pivot tables** to summarise the fleet from different angles:
-   - **Pivot Table 1** – total equipment per department, sorted descending.
-   - **Pivot Table 2** – department → equipment class drill-down (Transportation expanded).
-   - **Pivot Table 3** – equipment class → department drill-down (CUV expanded).
-
-![Fleet equipment by department](images/excel_fleet_by_department.png)
-
-**Findings**
-
-- **Transportation owns 1,221 of 1,582 units (≈ 77%)** of this part of the fleet – mainly Transit Buses (379),
-  Off Road Vehicle Equipment (276) and Heavy Duty vehicles (248).
-- By class, **Transit Bus (379)**, **Heavy Duty (290)** and **Off Road Vehicle Equipment (283)** are the largest
-  groups; almost all *Public Safety* vehicles (79 of 80) belong to the Sheriff's Office.
-- The distribution is highly skewed (mean 32 vs max 379), so medians/pivots are more informative than the average.
 
 ---
 
